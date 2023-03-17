@@ -1,22 +1,38 @@
 from flask_restx import Resource, Namespace
-
-from dao.model.genre import GenreSchema
 from implemented import genre_service
+from flask import request
+from views.auth import auth_reqiured, admin_required
 
-genre_ns = Namespace('genres')
+genres_ns = Namespace('genres')
 
-
-@genre_ns.route('/')
-class GenresView(Resource):
-    def get(self):
-        rs = genre_service.get_all()
-        res = GenreSchema(many=True).dump(rs)
-        return res, 200
-
-
-@genre_ns.route('/<int:rid>')
+@genres_ns.route('/')
 class GenreView(Resource):
-    def get(self, rid):
-        r = genre_service.get_one(rid)
-        sm_d = GenreSchema().dump(r)
-        return sm_d, 200
+    @auth_reqiured
+    def get(self):
+        genres = genre_service.get_all()
+        return genres, 200
+
+    @admin_required
+    def post(self):
+        data = request.json
+        genre = genre_service.create(data)
+        return genre, 201
+
+@genres_ns.route('/<gid>')
+class GenreView(Resource):
+    @auth_reqiured
+    def get(self, gid):
+        gen = genre_service.get_one(gid)
+        return gen, 201
+
+    @admin_required
+    def put(self, gid):
+        data = request.json
+        genre_service.update(data)
+        return '', 201
+
+    @admin_required
+    def delete(self, gid):
+        print(1)
+        genre_service.delete(gid)
+        return '', 204

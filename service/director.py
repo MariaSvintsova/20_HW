@@ -1,4 +1,9 @@
 from dao.director import DirectorDAO
+from dao.model.director import DirectorSchema
+
+
+director_schema = DirectorSchema()
+directors_schema = DirectorSchema(many=True)
 
 
 class DirectorService:
@@ -6,17 +11,18 @@ class DirectorService:
         self.dao = dao
 
     def get_one(self, bid):
-        return self.dao.get_one(bid)
+        return director_schema.dump(self.dao.get_one(bid))
 
     def get_all(self):
-        return self.dao.get_all()
+        return directors_schema.dump(self.dao.get_all())
 
     def create(self, director_d):
-        return self.dao.create(director_d)
+        return director_schema.dump(self.dao.create(director_d))
 
     def update(self, director_d):
         self.dao.update(director_d)
-        return self.dao
+        return ''
 
     def delete(self, rid):
         self.dao.delete(rid)
+        return ''
